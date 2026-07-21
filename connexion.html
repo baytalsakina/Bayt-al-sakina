@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bayt Al Sakina — Connexion</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --bg:#FFFBF8;
+    --cream:#FDF5EE;
+    --rose1:#FADADD;
+    --rose2:#F2B5BC;
+    --rose3:#D9829A;
+    --sage1:#D6E8D0;
+    --sage2:#A8C89A;
+    --sage3:#6E9E68;
+    --beige:#F7EDD8;
+    --gold:#C9A96E;
+    --text:#4A3540;
+    --text2:#8A6A72;
+    --text3:#B8A0A8;
+    --white:#FFFFFF;
+    --border:#F5DDE0;
+  }
+
+  body{
+    background:var(--bg);
+    font-family:"DM Sans",sans-serif;
+    font-weight:300;
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:var(--cream)}
+  ::-webkit-scrollbar-thumb{background:var(--rose2);border-radius:3px}
+
+  /* decorative soft blobs in the background, matching the pastel dreamy feel */
+  .blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(60px);
+    opacity:.55;
+    z-index:0;
+  }
+  .blob.b1{width:260px;height:260px;background:var(--rose1);top:-80px;left:-80px}
+  .blob.b2{width:220px;height:220px;background:var(--beige);bottom:-70px;right:-60px}
+  .blob.b3{width:180px;height:180px;background:var(--sage1);bottom:20%;left:-90px;opacity:.35}
+
+  .card{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:400px;
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:24px;
+    padding:40px 34px 34px;
+    box-shadow:0 18px 40px -18px rgba(217,130,154,0.25);
+    text-align:center;
+  }
+
+  .emblem{
+    font-size:26px;
+    margin-bottom:10px;
+  }
+
+  .arabic{
+    font-family:"Amiri",serif;
+    font-size:19px;
+    color:var(--gold);
+    direction:rtl;
+    margin-bottom:6px;
+    line-height:1.6;
+  }
+
+  h1{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-weight:400;
+    font-size:28px;
+    color:var(--text);
+    letter-spacing:0.01em;
+  }
+
+  .subtitle{
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-style:italic;
+    font-size:14.5px;
+    color:var(--text2);
+    margin-top:6px;
+    margin-bottom:28px;
+  }
+
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+    text-align:left;
+  }
+
+  .field-label{
+    font-size:9.5px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--sage3);
+    font-weight:600;
+    margin-bottom:8px;
+    font-family:"DM Sans",sans-serif;
+  }
+
+  .field input{
+    width:100%;
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    padding:11px 15px;
+    font-size:13.5px;
+    background:var(--cream);
+    outline:none;
+    font-family:"DM Sans",sans-serif;
+    color:var(--text);
+    transition:border-color .2s, background .2s;
+  }
+
+  .field input::placeholder{
+    color:var(--text3);
+    font-family:"Cormorant Garamond",Georgia,serif;
+    font-style:italic;
+    font-size:13.5px;
+  }
+
+  .field input:focus{
+    border-color:var(--rose2);
+    background:var(--white);
+  }
+
+  .name-row{
+    display:none;
+    gap:12px;
+  }
+  .name-row .field{flex:1}
+
+  body.signup-mode .name-row{
+    display:flex;
+  }
+
+  .row-between{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:11.5px;
+    color:var(--text2);
+    margin-top:-4px;
+  }
+
+  .remember{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+
+  .remember input[type="checkbox"]{
+    appearance:none;
+    -webkit-appearance:none;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    border:1.5px solid var(--rose2);
+    cursor:pointer;
+    position:relative;
+    flex-shrink:0;
+  }
+  .remember input[type="checkbox"]:checked{
+    background:var(--sage2);
+    border-color:var(--sage2);
+  }
+  .remember input[type="checkbox"]:checked::after{
+    content:"✓";
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:9px;
+  }
+
+  .forgot{
+    color:var(--rose3);
+    text-decoration:none;
+  }
+  .forgot:hover{text-decoration:underline}
+
+  body.signup-mode .forgot-row{display:none}
+
+  .submit-btn{
+    margin-top:6px;
+    width:100%;
+    background:var(--rose3);
+    color:#fff;
+    border:none;
+    border-radius:100px;
+    padding:12px 0;
+    font-size:13.5px;
+    letter-spacing:0.03em;
+    font-family:"DM Sans",sans-serif;
+    font-weight:500;
+    cursor:pointer;
+    transition:background .2s, transform .15s;
+  }
+  .submit-btn:hover{
+    background:#c76e88;
+    transform:translateY(-1px);
+  }
+  .submit-btn:active{transform:translateY(0)}
+
+  .divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:22px 0 16px;
+    color:var(--text3);
+    font-size:10.5px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+  .divider::before,.divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--border);
+  }
+
+  .switch-text{
+    font-size:12.5px;
+    color:var(--text2);
+    font-family:"DM Sans",sans-serif;
+  }
+
+  .switch-link{
+    color:var(--rose3);
+    font-weight:500;
+    cursor:pointer;
+    text-decoration:none;
+    border-bottom:1px solid var(--rose2);
+    padding-bottom:1px;
+  }
+  .switch-link:hover{color:#c76e88}
+
+</style>
+</head>
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+
+<div class="card">
+  <div class="emblem">🕊️</div>
+  <div class="arabic">سَكِينَة</div>
+  <h1 id="formTitle">Bayt Al Sakina</h1>
+  <div class="subtitle" id="formSubtitle">Ravie de te revoir</div>
+
+  <form id="authForm">
+    <div class="name-row">
+      <div class="field">
+        <div class="field-label">Prénom</div>
+        <input type="text" name="firstname" placeholder="Ton prénom">
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Email</div>
+      <input type="email" name="email" placeholder="toi@exemple.com" required>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Mot de passe</div>
+      <input type="password" name="password" placeholder="••••••••" required>
+    </div>
+
+    <div class="row-between forgot-row">
+      <label class="remember">
+        <input type="checkbox" name="remember">
+        Se souvenir de moi
+      </label>
+      <a href="#" class="forgot">Mot de passe oublié ?</a>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Se connecter</button>
+  </form>
+
+  <div class="divider">ou</div>
+
+  <div class="switch-text" id="switchText">
+    Pas encore de compte ?
+    <a href="#" class="switch-link" id="switchLink">Créer un compte</a>
+  </div>
+</div>
+
+<script>
+  const body = document.body;
+  const formTitle = document.getElementById('formTitle');
+  const formSubtitle = document.getElementById('formSubtitle');
+  const submitBtn = document.getElementById('submitBtn');
+  const switchText = document.getElementById('switchText');
+  const switchLink = document.getElementById('switchLink');
+  const authForm = document.getElementById('authForm');
+
+  let isSignup = false;
+
+  function toggleMode(e) {
+    e.preventDefault();
+    isSignup = !isSignup;
+    body.classList.toggle('signup-mode', isSignup);
+
+    if (isSignup) {
+      formTitle.textContent = 'Rejoindre Bayt Al Sakina';
+      formSubtitle.textContent = 'Crée ton espace de sakina';
+      submitBtn.textContent = "S'inscrire";
+      switchText.innerHTML = 'Déjà un compte ? <a href="#" class="switch-link">Se connecter</a>';
+    } else {
+      formTitle.textContent = 'Bayt Al Sakina';
+      formSubtitle.textContent = 'Ravie de te revoir';
+      submitBtn.textContent = 'Se connecter';
+      switchText.innerHTML = 'Pas encore de compte ? <a href="#" class="switch-link">Créer un compte</a>';
+    }
+  }
+
+  // Event delegation: works even after switchText's innerHTML is replaced
+  switchText.addEventListener('click', (e) => {
+    if (e.target.classList.contains('switch-link')) {
+      toggleMode(e);
+    }
+  });
+
+  // La soumission du formulaire (connexion / inscription) est gérée par auth.js
+
+</script>
+<!-- Firebase (SDK compat, compatible avec un simple <script>) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="auth.js"></script>
+
+</body>
+</html>
