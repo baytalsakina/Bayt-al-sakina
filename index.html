@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sakina Planner — Le planner qui réconcilie ta dunya et ton dîn</title>
+<meta name="description" content="Sakina Planner, par Bayt Al Sakina — organise ta vie scolaire ou professionnelle sans jamais perdre ta vie spirituelle de vue.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500&family=Amiri:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ivory: #FAF7F2;
+  --cream: #F3EDE3;
+  --cream-deep: #EBE3D5;
+  --rose: #E8C8BC;
+  --rose-deep: #D4A090;
+  --sage: #A8B89A;
+  --sage-light: #C8D4BF;
+  --gold: #C9A96E;
+  --gold-light: #E8D5B0;
+  --taupe: #8C7B6B;
+  --text: #3D322A;
+  --text-light: #7A6A5A;
+  --blue-mist: #B8C8D4;
+  --white: #FFFFFF;
+  --accent: #D4A090;
+}
+
+/* THEME SWATCHES (signature) */
+.swatches {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 1.1s forwards;
+}
+.swatch {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform .2s ease, border-color .2s ease;
+  position: relative;
+}
+.swatch:hover { transform: translateY(-2px); }
+.swatch.active { border-color: var(--text); }
+.swatch.active::after {
+  content: "✓"; position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center; color: #fff; font-size: 11px;
+}
+.swatch-label {
+  font-size: 11px; color: var(--text-light); letter-spacing: 0.3px;
+  opacity: 0; animation: fadeUp 0.8s ease 1.15s forwards;
+}
+.swatch-label b { color: var(--accent); transition: color .3s ease; }
+
+html { scroll-behavior: smooth; }
+em { transition: color .3s ease; }
+
+body {
+  background: var(--ivory);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(250,247,242,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gold-light);
+}
+
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-logo span { color: var(--gold); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 13px;
+  color: var(--text-light);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover { color: var(--gold); }
+
+.nav-cta {
+  padding: 10px 24px;
+  background: var(--text);
+  color: var(--ivory) !important;
+  border-radius: 100px;
+  font-size: 13px !important;
+  transition: background 0.2s !important;
+}
+
+.nav-cta:hover { background: var(--taupe) !important; color: var(--ivory) !important; }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg-orb-1 {
+  position: absolute;
+  top: 10%;
+  right: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.hero-bg-orb-2 {
+  position: absolute;
+  bottom: 5%;
+  left: -8%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--rose) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.hero-bg-orb-3 {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--sage-light) 0%, transparent 70%);
+  border-radius: 50%;
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+}
+
+.hero-brand {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(20px, 3vw, 26px);
+  letter-spacing: 0.04em;
+  color: var(--taupe);
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0s forwards;
+}
+.hero-brand span { color: var(--gold); }
+
+.hero-ayah {
+  font-family: 'Amiri', serif;
+  font-size: 26px;
+  color: var(--gold);
+  direction: rtl;
+  line-height: 1.8;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.2s forwards;
+}
+
+.hero-ref {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.4s forwards;
+}
+
+.hero-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.5s forwards;
+}
+
+.hero-divider-line {
+  width: 60px;
+  height: 1px;
+  background: var(--gold-light);
+}
+
+.hero-divider-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 6vw, 62px);
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--text);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.6s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-subtitle {
+  font-size: 16px;
+  color: var(--text-light);
+  line-height: 1.75;
+  max-width: 480px;
+  margin: 0 auto 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.8s forwards;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 1s forwards;
+}
+
+.btn-primary {
+  padding: 14px 32px;
+  background: var(--text);
+  color: var(--ivory);
+  border: none;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.btn-primary:hover { background: var(--taupe); transform: translateY(-1px); }
+
+.btn-outline {
+  padding: 13px 32px;
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--gold-light);
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-badge {
+  margin-top: 48px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 1px solid var(--gold-light);
+  border-radius: 100px;
+  padding: 10px 20px;
+  font-size: 12px;
+  color: var(--text-light);
+  opacity: 0;
+  animation: fadeUp 0.8s ease 1.2s forwards;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--sage);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+/* SECTIONS COMMUNES */
+.section-wrap {
+  padding: 96px 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.section-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 300;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.section-heading em { font-style: italic; color: var(--accent); }
+
+.section-sub {
+  font-size: 15px;
+  color: var(--text-light);
+  text-align: center;
+  line-height: 1.75;
+  max-width: 520px;
+  margin: 0 auto 56px;
+}
+
+/* PROBLÈME */
+.problem-section {
+  background: var(--cream);
+  padding: 96px 24px;
+}
+
+.problem-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.problem-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3.5vw, 36px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 32px;
+  position: relative;
+  padding: 0 32px;
+}
+
+.problem-quote::before {
+  content: '"';
+  font-size: 80px;
+  color: var(--gold-light);
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-family: 'Cormorant Garamond', serif;
+  line-height: 1;
+}
+
+.problem-tags {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 40px;
+}
+
+.problem-tag {
+  padding: 8px 18px;
+  background: white;
+  border: 1px solid var(--rose);
+  border-radius: 100px;
+  font-size: 13px;
+  color: var(--text-light);
+}
+
+/* SOLUTION */
+.solution-block {
+  background: var(--text);
+  border-radius: 28px;
+  padding: 56px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.solution-block::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--gold) 0%, transparent 70%);
+  opacity: 0.15;
+  border-radius: 50%;
+}
+
+.solution-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 22px;
+  color: var(--gold);
+  direction: rtl;
+  margin-bottom: 24px;
+  line-height: 1.8;
+}
+
+.solution-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 300;
+  color: var(--ivory);
+  line-height: 1.25;
+  margin-bottom: 20px;
+}
+
+.solution-title em { color: var(--gold); font-style: italic; }
+
+.solution-body {
+  font-size: 15px;
+  color: rgba(250,247,242,0.7);
+  line-height: 1.8;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 24px;
+  padding: 36px 32px;
+  border: 1px solid var(--cream-deep);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(61,50,42,0.08);
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.feature-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.feature-desc {
+  font-size: 13px;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+.feature-tag {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tag-spiritual { background: var(--sage-light); color: var(--text); }
+.tag-planning { background: var(--gold-light); color: var(--text); }
+.tag-school { background: var(--blue-mist); color: var(--text); }
+.tag-special { background: var(--rose); color: var(--text); }
+
+/* APERÇU APP */
+.app-preview {
+  background: var(--cream);
+  padding: 96px 24px;
+}
+
+.preview-window {
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(61,50,42,0.12);
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid var(--cream-deep);
+}
+
+.preview-bar {
+  background: var(--cream);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--cream-deep);
+}
+
+.preview-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.preview-url {
+  flex: 1;
+  background: white;
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px;
+  color: var(--text-light);
+  margin: 0 12px;
+  border: 1px solid var(--cream-deep);
+}
+
+.preview-content {
+  padding: 32px;
+}
+
+/* Dashboard preview */
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.dash-greeting {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  color: var(--text);
+  font-weight: 300;
+}
+
+.dash-greeting em { color: var(--accent); font-style: italic; }
+
+.dash-date {
+  text-align: right;
+}
+
+.dash-date-hijri {
+  font-family: 'Amiri', serif;
+  font-size: 14px;
+  color: var(--gold);
+  direction: rtl;
+}
+
+.dash-date-greg {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.dash-streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cream);
+  border-radius: 100px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.dash-card {
+  background: var(--cream);
+  border-radius: 18px;
+  padding: 20px;
+}
+
+.dash-card-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+.prayer-mini-row {
+  display: flex;
+  gap: 8px;
+}
+
+.prayer-mini {
+  flex: 1;
+  text-align: center;
+}
+
+.prayer-mini-name {
+  font-size: 9px;
+  color: var(--text-light);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.prayer-mini-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin: 0 auto;
+  border: 1.5px solid var(--gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.prayer-mini-circle.done { background: var(--sage); border-color: var(--sage); color: white; }
+.prayer-mini-circle.next { border-color: var(--gold); background: var(--gold-light); }
+
+.niyya-box {
+  background: white;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-light);
+  line-height: 1.5;
+  border: 1px solid var(--gold-light);
+}
+
+.task-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--cream-deep);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.task-mini:last-child { border-bottom: none; }
+
+.task-mini-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--gold-light);
+  flex-shrink: 0;
+}
+
+.task-mini-dot.done { background: var(--sage); border-color: var(--sage); }
+
+.dhikr-mini {
+  font-family: 'Amiri', serif;
+  font-size: 18px;
+  color: var(--gold);
+  direction: rtl;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.dhikr-progress {
+  height: 4px;
+  background: var(--cream-deep);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.dhikr-progress-bar {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 100px;
+  width: 60%;
+}
+
+/* PRIX */
+.pricing-section { padding: 96px 24px; }
+
+.pricing-card {
+  background: white;
+  border-radius: 28px;
+  padding: 56px 48px;
+  max-width: 520px;
+  margin: 0 auto;
+  border: 1px solid var(--cream-deep);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-light), var(--gold), var(--rose-deep));
+}
+
+.pricing-badge {
+  display: inline-block;
+  background: var(--gold-light);
+  color: var(--text);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.pricing-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.pricing-price {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1;
+  margin: 24px 0 8px;
+}
+
+.pricing-price sup {
+  font-size: 24px;
+  vertical-align: super;
+  color: var(--text-light);
+}
+
+.pricing-note {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 36px;
+  letter-spacing: 0.5px;
+}
+
+.pricing-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+.pricing-features li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--cream);
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pricing-features li:last-child { border-bottom: none; }
+
+.pricing-check { color: var(--sage); font-size: 16px; }
+
+.btn-gold {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: white;
+  border: none;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn-gold:hover { background: var(--rose-deep); transform: translateY(-1px); }
+
+.pricing-guarantee {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* FAQ */
+.faq-section {
+  background: var(--cream);
+  padding: 96px 24px;
+}
+
+.faq-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: white;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid var(--cream-deep);
+}
+
+.faq-question {
+  padding: 20px 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  color: var(--text);
+  user-select: none;
+}
+
+.faq-icon {
+  color: var(--gold);
+  font-size: 20px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.faq-item.open .faq-answer { max-height: 200px; }
+
+.faq-answer-inner {
+  padding: 0 24px 20px;
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+/* CTA FINAL */
+.cta-final {
+  padding: 96px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-final-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--gold-light) 0%, transparent 60%);
+  opacity: 0.25;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cta-final-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.cta-final-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 22px;
+  color: var(--gold);
+  direction: rtl;
+  margin-bottom: 6px;
+  line-height: 1.8;
+}
+
+.cta-final-ref {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  margin-bottom: 36px;
+}
+
+.cta-final-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 16px;
+}
+
+.cta-final-title em { font-style: italic; color: var(--accent); }
+
+.cta-final-sub {
+  font-size: 15px;
+  color: var(--text-light);
+  line-height: 1.75;
+  margin-bottom: 40px;
+}
+
+/* FOOTER */
+footer {
+  background: var(--text);
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  color: var(--ivory);
+  margin-bottom: 8px;
+}
+
+.footer-logo span { color: var(--gold); }
+
+.footer-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 16px;
+  color: var(--gold);
+  direction: rtl;
+  margin-bottom: 20px;
+}
+
+.footer-note {
+  font-size: 12px;
+  color: rgba(250,247,242,0.4);
+  letter-spacing: 0.5px;
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 16px 20px; }
+  .nav-links { display: none; }
+  .dash-grid { grid-template-columns: 1fr; }
+  .solution-block { padding: 40px 24px; }
+  .pricing-card { padding: 40px 24px; }
+  .preview-content { padding: 20px; }
+  .dash-header { flex-direction: column; gap: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Bayt Al <span>Sakina</span></a>
+  <ul class="nav-links">
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#apercu">Aperçu</a></li>
+    <li><a href="#prix">Prix</a></li>
+    <li><a href="connexion.html" class="nav-cta">Déjà cliente ? Connexion</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-orb-1"></div>
+  <div class="hero-bg-orb-2"></div>
+  <div class="hero-bg-orb-3"></div>
+  <div class="hero-inner">
+    <div class="hero-brand">Bayt Al <span>Sakina</span></div>
+    <div class="hero-ayah">وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ</div>
+    <div class="hero-ref">Az-Zariyat : 56</div>
+    <div class="hero-divider">
+      <div class="hero-divider-line"></div>
+      <div class="hero-divider-dot"></div>
+      <div class="hero-divider-line"></div>
+    </div>
+    <h1 class="hero-title">Sakina Planner est né<br>de <em>cette évidence.</em></h1>
+    <p class="hero-subtitle">Le planner pensé pour concilier ta vie scolaire ou professionnelle et ta vie spirituelle — dans la teinte qui te ressemble.</p>
+    <div class="hero-actions">
+      <a href="#prix" class="btn-primary">Découvrir les planners</a>
+      <a href="#apercu" class="btn-outline">Voir l'aperçu</a>
+    </div>
+
+    <div class="swatches">
+      <button class="swatch active" style="background:#D4A090" data-accent="#D4A090" data-name="Rosé" aria-label="Thème Rosé"></button>
+      <button class="swatch" style="background:#A8B89A" data-accent="#A8B89A" data-name="Sauge" aria-label="Thème Sauge"></button>
+      <button class="swatch" style="background:#9C89C4" data-accent="#9C89C4" data-name="Lavande" aria-label="Thème Lavande"></button>
+      <button class="swatch" style="background:#C9A96E" data-accent="#C9A96E" data-name="Doré" aria-label="Thème Doré"></button>
+    </div>
+    <div class="swatch-label">Thème <b id="themeName">Rosé</b> — le même choix t'attend dans ton planner</div>
+  </div>
+</section>
+
+<!-- PROBLÈME -->
+<section class="problem-section">
+  <div class="problem-inner reveal">
+    <div class="section-eyebrow">Tu te reconnais ?</div>
+    <div class="problem-quote">
+      Tu jonglasses entre tes cours, ton travail, tes projets... et au milieu de tout ça, ta vie spirituelle passe en dernier. Les prières décalées, le Quran remis à demain, le dhikr oublié. Pas par manque de volonté — mais parce qu'aucun outil n'a jamais été pensé pour toi.
+    </div>
+    <div class="problem-tags">
+      <span class="problem-tag">😔 Prières décalées</span>
+      <span class="problem-tag">📚 Deadlines qui s'accumulent</span>
+      <span class="problem-tag">📿 Dhikr oublié</span>
+      <span class="problem-tag">😮‍💨 Sentiment de désorganisation</span>
+      <span class="problem-tag">📖 Quran remis à demain</span>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<div class="section-wrap">
+  <div class="solution-block reveal">
+    <div class="solution-arabic">بيت السكينة</div>
+    <h2 class="solution-title">Ta dunya et ton dîn<br>ne sont pas <em>deux vies séparées.</em></h2>
+    <p class="solution-body">Bayt Al Sakina t'aide à ne jamais l'oublier. Un espace où organiser ta vie est déjà un acte d'adoration — parce que chaque journée commence par une intention, et chaque tâche trouve sa place autour de ce qui compte vraiment.</p>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-wrap" style="padding-top:0;">
+    <div class="section-eyebrow reveal">Ce que tu retrouves</div>
+    <h2 class="section-heading reveal">Tout ce dont tu as besoin,<br><em>enfin réuni.</em></h2>
+    <p class="section-sub reveal">Cinq espaces pensés pour toi, qui fonctionnent ensemble.</p>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <span class="feature-icon">🤲</span>
+        <div class="feature-title">Suivi des 5 prières</div>
+        <p class="feature-desc">Coche tes prières au fil de la journée et visualise en un coup d'œil ce qu'il te reste à accomplir.</p>
+        <span class="feature-tag tag-spiritual">Spirituel</span>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">📅</span>
+        <div class="feature-title">Planner complet</div>
+        <p class="feature-desc">Vue journalière avec créneaux de 00h à 23h, to-do list, objectifs du jour et notes importantes.</p>
+        <span class="feature-tag tag-planning">Organisation</span>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">📿</span>
+        <div class="feature-title">Dhikr & Quran</div>
+        <p class="feature-desc">Compteur de dhikr personnalisable et suivi de ta lecture du Coran, sourate et pages du jour.</p>
+        <span class="feature-tag tag-spiritual">Spirituel</span>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🎓</span>
+        <div class="feature-title">Version Travail ou Vie Scolaire</div>
+        <p class="feature-desc">Deux planners au choix : un pensé pour les études (cours, révisions, examens), un pensé pour le travail (réunions, livrables, deadlines).</p>
+        <span class="feature-tag tag-school">Scolaire · Pro</span>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">🎨</span>
+        <div class="feature-title">4 thèmes de couleur</div>
+        <p class="feature-desc">Rosé, sauge, lavande ou doré — change l'habillage de ton espace à tout moment, comme tu l'as vu plus haut.</p>
+        <span class="feature-tag tag-special">Personnalisation</span>
+      </div>
+      <div class="feature-card reveal">
+        <span class="feature-icon">📓</span>
+        <div class="feature-title">Journal & intentions</div>
+        <p class="feature-desc">Niyya du jour, gratitude, réflexion du soir. Un espace pour prendre soin de ton cœur, pas seulement de ton emploi du temps.</p>
+        <span class="feature-tag tag-spiritual">Journal</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APERÇU -->
+<section class="app-preview" id="apercu">
+  <div class="section-eyebrow reveal">Aperçu</div>
+  <h2 class="section-heading reveal">À quoi ça ressemble <em>de l'intérieur.</em></h2>
+  <p class="section-sub reveal">Le véritable écran d'accueil de ton planner, tel que tu le retrouveras après connexion.</p>
+
+  <div class="preview-window reveal">
+    <div class="preview-bar">
+      <div class="preview-dot" style="background:#FFB3B3;"></div>
+      <div class="preview-dot" style="background:#FFD9A0;"></div>
+      <div class="preview-dot" style="background:#B3E5B3;"></div>
+      <div class="preview-url">baytalsakina.github.io/sakina-travail.html</div>
+    </div>
+    <div class="preview-content" style="display:flex;flex-direction:column;gap:14px;">
+
+      <div style="background:linear-gradient(135deg,var(--cream),var(--rose));border-radius:18px;padding:26px;">
+        <h1 style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:32px;color:var(--text);line-height:1.1;margin-bottom:6px;">Bayt Al <em>Sakina</em></h1>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:12.5px;color:var(--text-light);margin-bottom:12px;">Organise ta vie · Nourris ton âme · Ne perds jamais Allah de vue</div>
+        <div style="font-family:'Amiri',serif;font-size:15px;color:var(--gold);direction:rtl;line-height:1.8;">وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ</div>
+        <div style="font-size:10px;color:var(--text-light);margin-top:2px;">Az-Zariyat : 56</div>
+      </div>
+
+      <div class="dash-card" style="background:white;border:1px solid var(--cream-deep);">
+        <div class="dash-card-title">Personnalise ton espace</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:120px;">
+            <div style="font-size:10px;color:var(--text-light);margin-bottom:4px;">Ton prénom</div>
+            <div style="border:1.5px solid var(--rose);border-radius:10px;padding:8px 12px;font-size:13px;background:var(--cream);font-family:'Cormorant Garamond',serif;font-style:italic;">Fatima</div>
+          </div>
+          <div style="flex:1;min-width:100px;">
+            <div style="font-size:10px;color:var(--text-light);margin-bottom:4px;">Année scolaire</div>
+            <div style="border:1.5px solid var(--rose);border-radius:10px;padding:8px 12px;font-size:13px;background:var(--cream);">2026-2027</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--text);">Bonjour, <em>Fatima</em> 🌸</div>
+      </div>
+
+      <div class="dash-card" style="background:white;border:1px solid var(--cream-deep);">
+        <div class="dash-card-title">Mon planning — Année scolaire</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;">
+          <div style="background:var(--rose);border-radius:10px;padding:10px 4px;text-align:center;font-size:11px;">🌸<br><span style="font-size:9px;color:var(--text-light)">2026</span><br>Septembre</div>
+          <div style="background:var(--cream);border-radius:10px;padding:10px 4px;text-align:center;font-size:11px;">🍂<br><span style="font-size:9px;color:var(--text-light)">2026</span><br>Octobre</div>
+          <div style="background:var(--rose);border-radius:10px;padding:10px 4px;text-align:center;font-size:11px;">🌧️<br><span style="font-size:9px;color:var(--text-light)">2026</span><br>Novembre</div>
+          <div style="background:var(--cream);border-radius:10px;padding:10px 4px;text-align:center;font-size:11px;">❄️<br><span style="font-size:9px;color:var(--text-light)">2026</span><br>Décembre</div>
+        </div>
+      </div>
+
+      <div class="dash-card" style="background:white;border:1px solid var(--cream-deep);">
+        <div class="dash-card-title">Mon intention pour cette année</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:13px;color:var(--text-light);border:1px solid var(--cream-deep);border-radius:10px;padding:12px;background:var(--cream);">Mon intention pour cette année scolaire…</div>
+      </div>
+
+    </div>
+  </div>
+  <p style="text-align:center;font-size:12px;color:var(--text-light);margin-top:18px;">Chaque jour s'ouvre ensuite sur ton planning détaillé, ton onglet Travail ou Vie Scolaire, ton espace spirituel et ton journal.</p>
+</section>
+
+<!-- PRIX -->
+<section class="pricing-section" id="prix">
+  <div class="section-eyebrow reveal">Tarif</div>
+  <h2 class="section-heading reveal">Simple, <em>transparent.</em></h2>
+  <p class="section-sub reveal">Un accès pour toute l'année scolaire. Pas d'abonnement caché, pas de surprise.</p>
+
+  <div class="pricing-card reveal">
+    <span class="pricing-badge">Choisis ta version</span>
+    <div class="pricing-title">Sakina Planner</div>
+    <div class="pricing-price" style="font-size:44px;margin:20px 0 4px;"><sup>€</sup>14<span style="font-size:28px;">,99</span></div>
+    <div class="pricing-note">Par planner · Accès pour l'année scolaire</div>
+    <ul class="pricing-features">
+      <li><span class="pricing-check">✓</span> Dashboard personnalisé avec ton prénom</li>
+      <li><span class="pricing-check">✓</span> Suivi des 5 prières, dhikr & lecture du Coran</li>
+      <li><span class="pricing-check">✓</span> Emploi du temps, to-do & objectifs du jour</li>
+      <li><span class="pricing-check">✓</span> Journal, niyya & gratitude quotidienne</li>
+      <li><span class="pricing-check">✓</span> 4 thèmes de couleur au choix</li>
+    </ul>
+    <a href="#" class="btn-gold" data-planner="sakina-travail" style="margin-bottom:10px;">💼 Version Travail — 14,99€</a>
+    <a href="#" class="btn-gold" data-planner="sakina-vie-scolaire" style="background:var(--text);">🏫 Version Vie Scolaire — 14,99€</a>
+    <div class="pricing-note" style="margin:22px 0 0;padding:14px;background:var(--cream);border-radius:14px;">✨ Les deux planners ensemble : <b style="color:var(--gold)">24,99€</b> au lieu de 29,98€</div>
+    <div class="pricing-guarantee">🔒 Paiement sécurisé · Accès immédiat après achat</div>
+  </div>
+</section>
+
+<!-- BLOOM -->
+<section style="padding:0 24px 96px;">
+  <div class="section-wrap" style="padding:40px 24px;background:var(--cream);border-radius:28px;text-align:center;max-width:640px;">
+    <div class="section-eyebrow" style="margin-bottom:10px;">Et si tu n'es pas musulmane ?</div>
+    <p style="font-size:14.5px;color:var(--text-light);line-height:1.75;margin-bottom:24px;">On a pensé à toi aussi. <strong style="color:var(--text)">Bloom</strong> reprend la même douceur et la même structure que Sakina Planner — organisation et bien-être — sans le volet spirituel.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <a href="#" class="btn-outline" data-planner="bloom-pro">💼 Bloom Pro — 14,99€</a>
+      <a href="#" class="btn-outline" data-planner="bloom-etudes">🎓 Bloom Études — 14,99€</a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="faq-inner">
+    <div class="section-eyebrow reveal">FAQ</div>
+    <h2 class="section-heading reveal" style="margin-bottom:40px;">Questions <em>fréquentes.</em></h2>
+
+    <div class="faq-item reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        C'est quoi exactement Sakina Planner ?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">Sakina Planner est une application web, signée Bayt Al Sakina — tu y accèdes depuis ton navigateur sur téléphone ou ordinateur. C'est un planner pensé pour les femmes musulmanes qui veulent organiser leur vie scolaire ou professionnelle sans sacrifier leur vie spirituelle.</div>
+      </div>
+    </div>
+
+    <div class="faq-item reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        Je dois choisir entre Travail et Vie Scolaire ?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">Oui, ce sont deux planners distincts — choisis celui qui correspond à ton quotidien actuel. Si tu veux les deux, le bundle à 24,99€ te fait économiser sur le prix des deux planners.</div>
+      </div>
+    </div>
+
+    <div class="faq-item reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        Je peux changer de thème de couleur plus tard ?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">Oui, à tout moment, directement depuis ton planner. Rien n'est figé au moment de l'achat.</div>
+      </div>
+    </div>
+
+    <div class="faq-item reveal">
+      <div class="faq-question" onclick="toggleFaq(this)">
+        Quand est-ce que j'y ai accès ?
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">Immédiatement après ton achat : tu crées ton compte, et ton planner s'ouvre directement.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final">
+  <div class="cta-final-orb"></div>
+  <div class="cta-final-inner reveal">
+    <div class="cta-final-arabic">أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ</div>
+    <div class="cta-final-ref">Ar-Ra'd : 28</div>
+    <h2 class="cta-final-title">Ta nouvelle année<br>commence <em>ici.</em></h2>
+    <p class="cta-final-sub">Pose ton intention. Organise ta journée. Ne perds jamais Allah de vue.</p>
+    <a href="#prix" class="btn-primary" style="display:inline-block;">Découvrir les planners — dès 14,99€</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Sakina <span>Planner</span></div>
+  <div class="footer-arabic">بيت السكينة</div>
+  <div class="footer-note">Par Bayt Al Sakina · © 2026 · Fait avec amour pour les femmes musulmanes 🌸 — et pour toutes celles qui, avec Bloom, cherchent la même douceur.</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // FAQ
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Swatches de thème (signature) — recolore l'accent de toute la page
+  const swatches = document.querySelectorAll('.swatch');
+  const themeName = document.getElementById('themeName');
+  swatches.forEach(sw => {
+    sw.addEventListener('click', () => {
+      swatches.forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      document.documentElement.style.setProperty('--accent', sw.dataset.accent);
+      themeName.textContent = sw.dataset.name;
+    });
+  });
+
+  // Boutons d'achat — à remplacer par tes Payment Links Stripe
+  document.querySelectorAll('[data-planner]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert("Lien de paiement à venir pour : " + btn.dataset.planner);
+    });
+  });
+</script>
+
+</body>
+</html>
