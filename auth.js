@@ -1,6 +1,6 @@
 // ── auth.js — Authentification Firebase pour Bayt Al Sakina ──
 
-// 1. Ta NOUVELLE configuration Firebase
+// 1. Ta configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyBxZuaZjKcnIzxflfsH092OxUsF4Ly4Nss",
   authDomain: "planner-bayt-al-sakina-cbcf4.firebaseapp.com",
@@ -19,6 +19,13 @@ const auth = firebase.auth();
 
 // Page vers laquelle rediriger une fois connectée
 const REDIRECT_URL = "bayt-al-sakina-v3-2.html";
+
+// ── 👑 LISTE VIP (Emails autorisés à s'inscrire) ──
+// Ajoute ici toutes les adresses autorisées en minuscules
+const VIP_EMAILS = [
+  "ton-email@exemple.com", // <-- Remplace/ajoute tes emails ici !
+  "test@exemple.com"
+];
 
 // ── Traduction des erreurs ──
 function traduireErreur(error) {
@@ -58,10 +65,16 @@ document.addEventListener("DOMContentLoaded", () => {
     authForm.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      const email = authForm.elements["email"].value.trim();
+      const email = authForm.elements["email"].value.trim().toLowerCase();
       const password = authForm.elements["password"].value;
       const isSignup = document.body.classList.contains("signup-mode");
       const defaultLabel = submitBtn.textContent;
+
+      // 🛑 VÉRIFICATION LISTE VIP (uniquement lors de l'inscription)
+      if (isSignup && VIP_EMAILS.length > 0 && !VIP_EMAILS.includes(email)) {
+        alert("Désolée, cette adresse e-mail n'est pas autorisée à accéder au planner.");
+        return;
+      }
 
       setLoading(true, submitBtn, defaultLabel);
 
@@ -99,9 +112,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Redirection automatique si déjà connecté
+  // 🔄 Redirection propre sans boucle infinie
   auth.onAuthStateChanged((user) => {
-    if (user) {
+    // On ne redirige que si l'utilisateur est connecté ET qu'il se trouve sur la page de connexion
+    const isConnexionPage = window.location.pathname.endsWith("connexion.html") || window.location.pathname.endsWith("/");
+    if (user && isConnexionPage) {
       window.location.href = REDIRECT_URL;
     }
   });
