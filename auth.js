@@ -1,21 +1,24 @@
-// ── auth.js — Authentification Firebase pour Bayt Al Sakina ──
+// ── auth.js — Authentification Firebase ──
 
-// 1. Configuration Firebase
+// 1. Configuration Firebase (Projet scolaire)
 const firebaseConfig = {
-  apiKey: "AIzaSyAwjwbiDh3wUD2XI03oQ1ugVXKB2KhpssA",
-  authDomain: "planner-bayt-al-sakina.firebaseapp.com",
-  projectId: "planner-bayt-al-sakina",
-  storageBucket: "planner-bayt-al-sakina.firebasestorage.app",
-  messagingSenderId: "747387910210",
-  appId: "1:747387910210:web:ab5abb054264c3eba915db",
-  measurementId: "G-FF3Q4MDJ3Y"
+  apiKey: "AIzaSyB-UtY84sUQP7u81DkaQWfNoOwzAg20994",
+  authDomain: "planner-sakina-scolaire.firebaseapp.com",
+  projectId: "planner-sakina-scolaire",
+  storageBucket: "planner-sakina-scolaire.firebasestorage.app",
+  messagingSenderId: "853795601825",
+  appId: "1:853795601825:web:2708e52e9ffe1052e81fe0",
+  measurementId: "G-QC29DTMB89"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Initialisation
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 const auth = firebase.auth();
 
 // Page vers laquelle rediriger une fois connectée
-const REDIRECT_URL = "bayt-al-sakina-v3-2.html";
+const REDIRECT_URL = "planner-sakina-pro.html";
 
 // ── Traduction des erreurs Firebase en messages clairs (FR) ──
 function traduireErreur(error) {
@@ -42,7 +45,7 @@ function traduireErreur(error) {
   }
 }
 
-// ── Petit état de chargement sur le bouton, le temps de la requête Firebase ──
+// ── Gestion de l'état du bouton ──
 function setLoading(isLoading, submitBtn, defaultLabel) {
   submitBtn.disabled = isLoading;
   submitBtn.textContent = isLoading ? "Un instant…" : defaultLabel;
@@ -52,54 +55,52 @@ document.addEventListener("DOMContentLoaded", () => {
   const authForm = document.getElementById("authForm");
   const submitBtn = document.getElementById("submitBtn");
 
-  authForm.addEventListener("submit", (e) => {
-    e.preventDefault();
+  if (authForm && submitBtn) {
+    authForm.addEventListener("submit", (e) => {
+      e.preventDefault();
 
-    const email = authForm.elements["email"].value.trim();
-    const password = authForm.elements["password"].value;
-    const isSignup = document.body.classList.contains("signup-mode");
-    const defaultLabel = submitBtn.textContent;
+      const email = authForm.elements["email"].value.trim();
+      const password = authForm.elements["password"].value;
+      const isSignup = document.body.classList.contains("signup-mode");
+      const defaultLabel = submitBtn.textContent;
 
-    setLoading(true, submitBtn, defaultLabel);
+      setLoading(true, submitBtn, defaultLabel);
 
-    if (isSignup) {
-      // 3. Inscription
-      const firstname = authForm.elements["firstname"]
-        ? authForm.elements["firstname"].value.trim()
-        : "";
+      if (isSignup) {
+        // Inscription
+        const firstname = authForm.elements["firstname"]
+          ? authForm.elements["firstname"].value.trim()
+          : "";
 
-      auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
-          // On enregistre le prénom sur le profil, si renseigné
-          if (firstname) {
-            return userCredential.user.updateProfile({ displayName: firstname });
-          }
-        })
-        .then(() => {
-          // 4. Redirection vers le planner
-          window.location.href = REDIRECT_URL;
-        })
-        .catch((error) => {
-          setLoading(false, submitBtn, defaultLabel);
-          alert(traduireErreur(error));
-        });
+        auth.createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            if (firstname) {
+              return userCredential.user.updateProfile({ displayName: firstname });
+            }
+          })
+          .then(() => {
+            window.location.href = REDIRECT_URL;
+          })
+          .catch((error) => {
+            setLoading(false, submitBtn, defaultLabel);
+            alert(traduireErreur(error));
+          });
 
-    } else {
-      // 2. Connexion
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          // 4. Redirection vers le planner
-          window.location.href = REDIRECT_URL;
-        })
-        .catch((error) => {
-          // 5. Message d'erreur clair en français
-          setLoading(false, submitBtn, defaultLabel);
-          alert(traduireErreur(error));
-        });
-    }
-  });
+      } else {
+        // Connexion
+        auth.signInWithEmailAndPassword(email, password)
+          .then(() => {
+            window.location.href = REDIRECT_URL;
+          })
+          .catch((error) => {
+            setLoading(false, submitBtn, defaultLabel);
+            alert(traduireErreur(error));
+          });
+      }
+    });
+  }
 
-  // Si l'utilisateur est déjà connecté, on le redirige directement
+  // Redirection automatique si déjà connecté
   auth.onAuthStateChanged((user) => {
     if (user) {
       window.location.href = REDIRECT_URL;
