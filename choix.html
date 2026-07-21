@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Choisis ton planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#FFFBF8; --cream:#FDF5EE; --rose2:#F2B5BC; --rose3:#D9829A;
+    --sage3:#6E9E68; --text:#4A3540; --text2:#8A6A72; --border:#F5DDE0; --white:#FFFFFF;
+  }
+  body{
+    background:var(--bg); font-family:"DM Sans",sans-serif; font-weight:300; color:var(--text);
+    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  .card{
+    width:100%; max-width:440px; background:var(--white); border:1.5px solid var(--border);
+    border-radius:24px; padding:36px 30px; box-shadow:0 18px 40px -18px rgba(217,130,154,0.25); text-align:center;
+  }
+  h1{
+    font-family:"Cormorant Garamond",Georgia,serif; font-weight:400; font-size:24px; color:var(--text); margin-bottom:6px;
+  }
+  .subtitle{
+    font-family:"Cormorant Garamond",Georgia,serif; font-style:italic; font-size:13.5px;
+    color:var(--text2); margin-bottom:26px;
+  }
+  .planner-list{ display:flex; flex-direction:column; gap:12px; }
+  .planner-btn{
+    display:flex; align-items:center; justify-content:space-between; width:100%;
+    border:1.5px solid var(--border); background:var(--cream); border-radius:14px;
+    padding:15px 18px; font-family:"DM Sans",sans-serif; font-size:14px; color:var(--text);
+    cursor:pointer; transition:all .2s; text-align:left;
+  }
+  .planner-btn:hover{ border-color:var(--rose2); background:var(--white); transform:translateY(-1px); }
+  .planner-btn .arrow{ color:var(--rose3); font-size:16px; }
+  .logout{
+    margin-top:24px; font-size:12px; color:var(--text2); text-decoration:none; border-bottom:1px solid var(--border);
+    cursor:pointer;
+  }
+  .empty{ font-size:13px; color:var(--text2); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Quel planner veux-tu ouvrir ?</h1>
+  <div class="subtitle">Tu as accès à plusieurs espaces</div>
+
+  <div class="planner-list" id="plannerList"></div>
+
+  <a class="logout" id="logoutLink">Se déconnecter</a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBxZuaZjKcnIzxflfsH092OxUsF4Ly4Nss",
+    authDomain: "planner-bayt-al-sakina-cbcf4.firebaseapp.com",
+    projectId: "planner-bayt-al-sakina-cbcf4",
+    storageBucket: "planner-bayt-al-sakina-cbcf4.firebasestorage.app",
+    messagingSenderId: "197612914658",
+    appId: "1:197612914658:web:304a5fe1e06db2383bdbbb",
+    measurementId: "G-90TDC3EZ6V"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  const PLANNERS = {
+    "sakina-travail":      { url: "sakina-travail.html",      label: "Bayt Al Sakina — Travail",      emoji: "💼" },
+    "sakina-vie-scolaire": { url: "sakina-vie-scolaire.html", label: "Bayt Al Sakina — Vie Scolaire",  emoji: "🏫" },
+    "bloom-pro":           { url: "bloom-pro.html",           label: "Bloom — Pro",                    emoji: "💼" },
+    "bloom-etudes":        { url: "bloom-etudes.html",        label: "Bloom — Études",                 emoji: "🏫" },
+  };
+
+  document.getElementById("logoutLink").addEventListener("click", () => {
+    auth.signOut().then(() => { window.location.href = "connexion.html"; });
+  });
+
+  // Sécurité : si quelqu'un arrive directement sur cette page sans être passé
+  // par connexion.html (donc sans être connecté), on le renvoie se connecter.
+  auth.onAuthStateChanged((user) => {
+    if (!user) {
+      window.location.href = "connexion.html";
+      return;
+    }
+
+    const raw = sessionStorage.getItem("plannersDisponibles");
+    const ids = raw ? JSON.parse(raw) : [];
+    const list = document.getElementById("plannerList");
+
+    if (!ids.length) {
+      list.innerHTML = '<div class="empty">Aucun planner à afficher. Reconnecte-toi.</div>';
+      return;
+    }
+
+    list.innerHTML = "";
+    ids.forEach((id) => {
+      const p = PLANNERS[id];
+      if (!p) return;
+      const btn = document.createElement("button");
+      btn.className = "planner-btn";
+      btn.innerHTML = `<span>${p.emoji} ${p.label}</span><span class="arrow">→</span>`;
+      btn.addEventListener("click", () => { window.location.href = p.url; });
+      list.appendChild(btn);
+    });
+  });
+</script>
+
+</body>
+</html>
