@@ -1,24 +1,24 @@
-// ── auth.js — Authentification Firebase ──
+// ── auth.js — Authentification Firebase pour Bayt Al Sakina ──
 
-// 1. Configuration Firebase (Projet scolaire)
+// 1. Configuration Firebase (Projet Bayt Al Sakina)
 const firebaseConfig = {
-  apiKey: "AIzaSyB-UtY84sUQP7u81DkaQWfNoOwzAg20994",
-  authDomain: "planner-sakina-scolaire.firebaseapp.com",
-  projectId: "planner-sakina-scolaire",
-  storageBucket: "planner-sakina-scolaire.firebasestorage.app",
-  messagingSenderId: "853795601825",
-  appId: "1:853795601825:web:2708e52e9ffe1052e81fe0",
-  measurementId: "G-QC29DTMB89"
+  apiKey: "AIzaSyAwjwbiDh3wUD2XI03oQ1ugVXKB2KhpssA",
+  authDomain: "planner-bayt-al-sakina.firebaseapp.com",
+  projectId: "planner-bayt-al-sakina",
+  storageBucket: "planner-bayt-al-sakina.firebasestorage.app",
+  messagingSenderId: "747387910210",
+  appId: "1:747387910210:web:ab5abb054264c3eba915db",
+  measurementId: "G-FF3Q4MDJ3Y"
 };
 
-// Initialisation
+// Initialisation de Firebase
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 const auth = firebase.auth();
 
 // Page vers laquelle rediriger une fois connectée
-const REDIRECT_URL = "planner-sakina-pro.html";
+const REDIRECT_URL = "bayt-al-sakina-v3-2.html";
 
 // ── Traduction des erreurs Firebase en messages clairs (FR) ──
 function traduireErreur(error) {
@@ -45,7 +45,7 @@ function traduireErreur(error) {
   }
 }
 
-// ── Gestion de l'état du bouton ──
+// ── Petit état de chargement sur le bouton ──
 function setLoading(isLoading, submitBtn, defaultLabel) {
   submitBtn.disabled = isLoading;
   submitBtn.textContent = isLoading ? "Un instant…" : defaultLabel;
