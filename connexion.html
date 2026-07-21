@@ -44,7 +44,6 @@
   ::-webkit-scrollbar-track{background:var(--cream)}
   ::-webkit-scrollbar-thumb{background:var(--rose2);border-radius:3px}
 
-  /* decorative soft blobs in the background, matching the pastel dreamy feel */
   .blob{
     position:absolute;
     border-radius:50%;
@@ -273,7 +272,7 @@
     <div class="name-row">
       <div class="field">
         <div class="field-label">Prénom</div>
-        <input type="text" name="firstname" placeholder="Ton prénom">
+        <input type="text" id="firstnameInput" name="firstname" placeholder="Ton prénom">
       </div>
     </div>
 
@@ -312,13 +311,12 @@
   const formSubtitle = document.getElementById('formSubtitle');
   const submitBtn = document.getElementById('submitBtn');
   const switchText = document.getElementById('switchText');
-  const switchLink = document.getElementById('switchLink');
-  const authForm = document.getElementById('authForm');
+  const firstnameInput = document.getElementById('firstnameInput');
 
   let isSignup = false;
 
   function toggleMode(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     isSignup = !isSignup;
     body.classList.toggle('signup-mode', isSignup);
 
@@ -327,25 +325,24 @@
       formSubtitle.textContent = 'Crée ton espace de sakina';
       submitBtn.textContent = "S'inscrire";
       switchText.innerHTML = 'Déjà un compte ? <a href="#" class="switch-link">Se connecter</a>';
+      firstnameInput.required = true;
     } else {
       formTitle.textContent = 'Bayt Al Sakina';
       formSubtitle.textContent = 'Ravie de te revoir';
       submitBtn.textContent = 'Se connecter';
       switchText.innerHTML = 'Pas encore de compte ? <a href="#" class="switch-link">Créer un compte</a>';
+      firstnameInput.required = false;
     }
   }
 
-  // Event delegation: works even after switchText's innerHTML is replaced
   switchText.addEventListener('click', (e) => {
     if (e.target.classList.contains('switch-link')) {
       toggleMode(e);
     }
   });
-
-  // La soumission du formulaire (connexion / inscription) est gérée par auth.js
-
 </script>
-<!-- Firebase (SDK compat, compatible avec un simple <script>) -->
+
+<!-- Firebase (SDK compat, compatible avec un simple script) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="auth.js"></script>
