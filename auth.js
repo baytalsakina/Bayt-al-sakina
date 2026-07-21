@@ -21,10 +21,9 @@ const auth = firebase.auth();
 const REDIRECT_URL = "bayt-al-sakina-v3-2.html";
 
 // ── 👑 LISTE VIP (Emails autorisés à s'inscrire) ──
-// Ajoute ici toutes les adresses autorisées en minuscules
 const VIP_EMAILS = [
-  "ton-email@exemple.com", // <-- Remplace/ajoute tes emails ici !
-  "test@exemple.com"
+  "lyliabourouba94@gmail.com",
+  "bouroubalyliaa@gmail.com"
 ];
 
 // ── Traduction des erreurs ──
