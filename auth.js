@@ -1,14 +1,14 @@
 // ── auth.js — Authentification Firebase pour Bayt Al Sakina ──
 
-// 1. Configuration Firebase (Projet Bayt Al Sakina)
+// 1. Ta NOUVELLE configuration Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyAwjwbiDh3wUD2XI03oQ1ugVXKB2KhpssA",
-  authDomain: "planner-bayt-al-sakina.firebaseapp.com",
-  projectId: "planner-bayt-al-sakina",
-  storageBucket: "planner-bayt-al-sakina.firebasestorage.app",
-  messagingSenderId: "747387910210",
-  appId: "1:747387910210:web:ab5abb054264c3eba915db",
-  measurementId: "G-FF3Q4MDJ3Y"
+  apiKey: "AIzaSyBxZuaZjKcnIzxflfsH092OxUsF4Ly4Nss",
+  authDomain: "planner-bayt-al-sakina-cbcf4.firebaseapp.com",
+  projectId: "planner-bayt-al-sakina-cbcf4",
+  storageBucket: "planner-bayt-al-sakina-cbcf4.firebasestorage.app",
+  messagingSenderId: "197612914658",
+  appId: "1:197612914658:web:304a5fe1e06db2383bdbbb",
+  measurementId: "G-90TDC3EZ6V"
 };
 
 // Initialisation de Firebase
@@ -20,7 +20,7 @@ const auth = firebase.auth();
 // Page vers laquelle rediriger une fois connectée
 const REDIRECT_URL = "bayt-al-sakina-v3-2.html";
 
-// ── Traduction des erreurs Firebase en messages clairs (FR) ──
+// ── Traduction des erreurs ──
 function traduireErreur(error) {
   switch (error.code) {
     case "auth/invalid-email":
@@ -45,7 +45,6 @@ function traduireErreur(error) {
   }
 }
 
-// ── Petit état de chargement sur le bouton ──
 function setLoading(isLoading, submitBtn, defaultLabel) {
   submitBtn.disabled = isLoading;
   submitBtn.textContent = isLoading ? "Un instant…" : defaultLabel;
