@@ -116,6 +116,13 @@
       btn.addEventListener("click", () => { window.location.href = p.url; });
       list.appendChild(btn);
     });
+   if (user.email && user.email.toLowerCase() === "bouroubalyliaa@gmail.com") {
+      const btnPerso = document.createElement("button");
+      btnPerso.className = "planner-btn";
+      btnPerso.innerHTML = `<span>✨ Rattrapage prières</span><span class="arrow">→</span>`;
+      btnPerso.addEventListener("click", () => { window.location.href = "rattrapage-prieres.html"; });
+      list.appendChild(btnPerso);
+    }
   });
 </script>
 
