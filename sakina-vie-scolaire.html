@@ -9,7 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js"></script>
 <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -97,12 +96,11 @@ const firebaseConfig = {
   appId: "1:197612914658:web:ab5abb054264c3eba915db",
   measurementId: "G-90TDC3EZ6V"
 };
-let auth, db, messaging;
+let auth, db;
 try{
   firebase.initializeApp(firebaseConfig);
   auth = firebase.auth();
   db = firebase.firestore();
-  try{ messaging = firebase.messaging(); }catch(e){ console.error("Messaging non supporté", e); }
 }catch(e){
   console.error("Erreur d'initialisation Firebase :", e);
   if(window.__basShowError) window.__basShowError(e.message);
@@ -485,58 +483,6 @@ function SpecialDays({goBack}){
   </div>;
 }
 
-const VAPID_KEY = "BOHhDb2xyUvW8wRY6ZttlhO39rligaWgu_PoDlzWbargczXXhRotmHQ4InB-k-AqRHgNny6zIiHoYSRE4Ho1g7g";
-
-function NotifCard(){
-  const [n,setN]=useStore("notif_prefs",{
-    times:{fajr:"",dhuhr:"",asr:"",maghrib:"",isha:"",tachesAllah:"",tachesPerso:"",bilan:""},
-    fcmToken:null
-  });
-  const [status,setStatus]=useState(n.fcmToken?"✅ Notifications activées sur cet appareil":"Notifications pas encore activées");
-
-  const enable=async()=>{
-    if(!messaging){ setStatus("Ton navigateur ne supporte pas les notifications."); return; }
-    try{
-      const permission=await Notification.requestPermission();
-      if(permission!=="granted"){ setStatus("Permission refusée — active-la dans les réglages du navigateur."); return; }
-      const registration=await navigator.serviceWorker.register('firebase-messaging-sw.js');
-      const token=await messaging.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:registration});
-      setN(x=>({...x,fcmToken:token}));
-      setStatus("✅ Notifications activées sur cet appareil");
-    }catch(e){
-      console.error("Erreur activation notifications",e);
-      setStatus("Erreur lors de l'activation. Réessaie.");
-    }
-  };
-
-  const field=(key,label)=>(
-    <div style={{minWidth:110,flex:1}}>
-      <div style={{fontSize:11,color:C.text2,marginBottom:4,fontFamily:GF}}>{label}</div>
-      <input type="time" value={n.times[key]||""} onChange={e=>setN(x=>({...x,times:{...x.times,[key]:e.target.value}}))}
-        style={{width:"100%",border:`1.5px solid ${C.rose1}`,borderRadius:10,padding:"7px 10px",fontSize:13,background:C.cream,outline:"none",fontFamily:GF,color:C.text}}/>
-    </div>
-  );
-
-  return <Card>
-    <Lbl t="🔔 Notifications"/>
-    <div style={{fontSize:12,color:C.text2,marginBottom:14,fontFamily:GF}}>Fixe tes heures de rappel — prières et tâches du jour.</div>
-    <button onClick={enable} style={{background:C.rose3,color:"#fff",border:"none",borderRadius:100,padding:"10px 18px",fontSize:13,fontFamily:GF,marginBottom:8,cursor:"pointer"}}>
-      Activer les notifications sur ce téléphone
-    </button>
-    <div style={{fontSize:11.5,color:C.text2,marginBottom:14,fontFamily:GF}}>{status}</div>
-
-    <div style={{fontSize:10.5,letterSpacing:1,textTransform:"uppercase",color:C.gold,marginBottom:8,fontFamily:GF}}>Prières</div>
-    <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
-      {field("fajr","Fajr")}{field("dhuhr","Dhuhr")}{field("asr","Asr")}{field("maghrib","Maghrib")}{field("isha","Isha")}
-    </div>
-
-    <div style={{fontSize:10.5,letterSpacing:1,textTransform:"uppercase",color:C.gold,marginBottom:8,fontFamily:GF}}>Tâches & bilan</div>
-    <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-      {field("tachesAllah","Tâches pour Allah")}{field("tachesPerso","Tâches perso")}{field("bilan","Bilan du soir")}
-    </div>
-  </Card>;
-}
-
 // ── DASHBOARD ──
 function Dashboard({goMonth}){
   const [d,set]=useStore("bas_dash",{prenom:"",annee:"2026-2027",intention:""});
@@ -569,7 +515,6 @@ function Dashboard({goMonth}){
       </div>
       {d.prenom&&<div style={{marginTop:12,fontFamily:GD,fontSize:20,color:C.text}}>Bonjour, <em style={{color:C.rose3}}>{d.prenom}</em> 🌸</div>}
     </Card>
-    <NotifCard/>
     <Card>
       <Lbl t="Mon planning — Année scolaire"/>
       <div className="bas-grid-4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8}}>
