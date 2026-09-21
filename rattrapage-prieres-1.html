@@ -121,6 +121,8 @@
   .prayer-row:last-child{border-bottom:none;}
   .prayer-name{font-size:14.5px;font-weight:500;}
   .prayer-name .ar{color:var(--muted);font-size:12px;margin-left:6px;font-weight:400;}
+  .missed-note{display:block;font-size:11px;color:var(--clay);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+  .rem-auto{color:var(--clay);font-size:10.5px;}
 
   .toggle{
     width:26px;height:26px;border-radius:7px;border:1.5px solid var(--line);
@@ -238,24 +240,12 @@
           <div class="num small" id="statTarget">0</div>
           <div class="lbl">Objectif conseillé / jour</div>
         </div>
+        <div class="stat">
+          <div class="num small" id="statAuto">0</div>
+          <div class="lbl">Ajoutées automatiquement (jours manqués)</div>
+        </div>
       </div>
       <div class="beads" id="beadsRow"></div>
-    </div>
-
-    <div class="history" id="notifCard">
-      <h2>🔔 Notifications</h2>
-      <p style="font-size:12.5px;color:var(--muted);margin:0 0 16px;">Reçois un rappel à l'heure de chaque prière, et un rappel général pour ton planner.</p>
-      <button class="today-btn" id="enableNotifBtn" style="margin-bottom:16px;">Activer les notifications sur ce téléphone</button>
-      <div id="notifStatus" style="font-size:12.5px;color:var(--muted);margin-bottom:14px;"></div>
-      <div class="breakdown" id="notifTimes">
-        <div class="field"><label>Fajr</label><input type="time" id="tmFajr"></div>
-        <div class="field"><label>Dhuhr</label><input type="time" id="tmDhuhr"></div>
-        <div class="field"><label>Asr</label><input type="time" id="tmAsr"></div>
-        <div class="field"><label>Maghrib</label><input type="time" id="tmMaghrib"></div>
-        <div class="field"><label>Isha</label><input type="time" id="tmIsha"></div>
-        <div class="field"><label>Rappel général planner</label><input type="time" id="tmDaily"></div>
-      </div>
-      <button class="primary-btn" id="saveNotifBtn">Enregistrer les heures de rappel</button>
     </div>
 
     <div class="date-row">
@@ -293,7 +283,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyBxZuaZjKcnIzxflfsH092OxUsF4Ly4Nss",
@@ -412,6 +401,8 @@ function render(){
   const {totals, done, auto, totalSum, doneSum, remaining} = computeTotals();
   document.getElementById('statRemaining').textContent = remaining.toLocaleString('fr-FR');
   document.getElementById('statDone').textContent = doneSum.toLocaleString('fr-FR');
+  const autoSum = PRAYERS.reduce((s,p)=>s+(auto[p.key]||0),0);
+  document.getElementById('statAuto').textContent = autoSum.toLocaleString('fr-FR');
 
   const daysLeft = Math.max(daysBetween(todayStr(), state.config.targetDate), 0);
   document.getElementById('statDaysLeft').textContent = daysLeft;
@@ -434,11 +425,14 @@ function render(){
   // obligatory
   const obList = document.getElementById('obligatoryList');
   obList.innerHTML='';
+  const isPastDay = currentDate < todayStr();
   PRAYERS.forEach(p=>{
     const row = document.createElement('div');
     row.className='prayer-row';
+    const missedNote = (isPastDay && !day.ob[p.key])
+      ? `<span class="missed-note">→ comptée dans le rattrapage</span>` : '';
     row.innerHTML = `
-      <div class="prayer-name">${p.name} <span class="ar">${p.ar}</span></div>
+      <div class="prayer-name">${p.name} <span class="ar">${p.ar}</span>${missedNote}</div>
       <button class="toggle ${day.ob[p.key]?'on':''}" data-key="${p.key}">${day.ob[p.key]?'✓':''}</button>
     `;
     row.querySelector('.toggle').addEventListener('click', ()=>{
@@ -454,12 +448,13 @@ function render(){
   qaList.innerHTML='';
   PRAYERS.forEach(p=>{
     const remForType = Math.max(((totals[p.key]||0)+(auto[p.key]||0)) - done[p.key], 0);
+    const autoNote = (auto[p.key]||0) > 0 ? ` <span class="rem-auto">(dont ${auto[p.key]} manquées)</span>` : '';
     const row = document.createElement('div');
     row.className='prayer-row';
     row.innerHTML = `
       <div class="prayer-name">${p.name} <span class="ar">${p.ar}</span></div>
       <div class="qada-controls">
-        <span class="rem">${remForType} restantes</span>
+        <span class="rem">${remForType} restantes${autoNote}</span>
         <button class="step-btn" data-key="${p.key}" data-dir="-1">–</button>
         <span class="qcount" id="qc-${p.key}">${day.qada[p.key]}</span>
         <button class="step-btn" data-key="${p.key}" data-dir="1">+</button>
@@ -494,14 +489,17 @@ function renderHistory(){
     el.innerHTML = '<div class="hist-empty">Aucune journée enregistrée pour le moment.</div>';
     return;
   }
+  const today = todayStr();
   el.innerHTML = dates.map(d=>{
     const day = days[d];
     const obCount = PRAYERS.filter(p=>day.ob[p.key]).length;
     const qaCount = PRAYERS.reduce((s,p)=>s+(day.qada[p.key]||0),0);
+    const missedCount = d < today ? (5 - obCount) : 0;
+    const missedNote = missedCount > 0 ? `<span class="missed-note">+${missedCount} manquées (auto)</span>` : '';
     const label = new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
     return `<div class="hist-row">
       <div class="hist-date">${label}</div>
-      <div class="hist-meta"><span>${obCount}/5 du jour</span><span>+${qaCount} rattrapées</span></div>
+      <div class="hist-meta"><span>${obCount}/5 du jour</span><span>+${qaCount} rattrapées</span>${missedNote}</div>
     </div>`;
   }).join('');
 }
@@ -561,67 +559,11 @@ document.getElementById('gotoToday').addEventListener('click', ()=>{
   render();
 });
 
-// ---- Notifications ----
-const VAPID_KEY = "BOHhDb2xyUvW8wRY6ZttlhO39rligaWgu_PoDlzWbargczXXhRotmHQ4InB-k-AqRHgNny6zIiHoYSRE4Ho1g7g";
-let messaging = null;
-try{ messaging = firebase.messaging(); }catch(e){ console.error("Messaging non supporté", e); }
-
-async function loadNotifPrefs(){
-  try{
-    const doc = await db.collection("notifPrefs").doc(currentUser.uid).get();
-    const times = (doc.exists && doc.data().times) || {};
-    document.getElementById('tmFajr').value = times.fajr || '';
-    document.getElementById('tmDhuhr').value = times.dhuhr || '';
-    document.getElementById('tmAsr').value = times.asr || '';
-    document.getElementById('tmMaghrib').value = times.maghrib || '';
-    document.getElementById('tmIsha').value = times.isha || '';
-    document.getElementById('tmDaily').value = times.dailyReminder || '';
-    document.getElementById('notifStatus').textContent = doc.exists && doc.data().fcmToken
-      ? "✅ Notifications activées sur cet appareil"
-      : "Notifications pas encore activées";
-  }catch(e){ console.error("Erreur chargement notifPrefs", e); }
-}
-
-document.getElementById('enableNotifBtn').addEventListener('click', async ()=>{
-  const statusEl = document.getElementById('notifStatus');
-  if(!messaging){ statusEl.textContent = "Ton navigateur ne supporte pas les notifications."; return; }
-  try{
-    const permission = await Notification.requestPermission();
-    if(permission !== "granted"){
-      statusEl.textContent = "Permission refusée — active les notifications dans les réglages du navigateur.";
-      return;
-    }
-    const registration = await navigator.serviceWorker.register('firebase-messaging-sw.js');
-    const token = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
-    await db.collection("notifPrefs").doc(currentUser.uid).set({ fcmToken: token }, { merge: true });
-    statusEl.textContent = "✅ Notifications activées sur cet appareil";
-  }catch(e){
-    console.error("Erreur activation notifications", e);
-    statusEl.textContent = "Erreur lors de l'activation. Réessaie.";
-  }
-});
-
-document.getElementById('saveNotifBtn').addEventListener('click', async ()=>{
-  const times = {
-    fajr: document.getElementById('tmFajr').value,
-    dhuhr: document.getElementById('tmDhuhr').value,
-    asr: document.getElementById('tmAsr').value,
-    maghrib: document.getElementById('tmMaghrib').value,
-    isha: document.getElementById('tmIsha').value,
-    dailyReminder: document.getElementById('tmDaily').value,
-  };
-  try{
-    await db.collection("notifPrefs").doc(currentUser.uid).set({ times }, { merge: true });
-    flashSaved();
-  }catch(e){ console.error("Erreur sauvegarde horaires", e); }
-});
-
 auth.onAuthStateChanged(async (user)=>{
   if(!user){ window.location.href = "connexion.html"; return; }
   if(user.email.toLowerCase() !== "bouroubalyliaa@gmail.com"){ window.location.href = "choix.html"; return; }
   currentUser = user;
   await loadState();
-  await loadNotifPrefs();
   render();
 });
 </script>
